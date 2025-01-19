@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .responsive-header {
+    @apply fixed top-0 left-0 right-0 flex items-center justify-between bg-white shadow-md px-4 h-[70px] z-50;
+  }
+
+  .responsive-sidebar {
+    @apply fixed inset-y-0 left-0 w-[250px] bg-gradient-to-b from-indigo-600 to-indigo-800 text-white shadow-lg transform -translate-x-full transition-transform duration-300;
+  }
+
+  .sidebar-open {
+    @apply translate-x-0;
+  }
+
+  .responsive-input {
+    @apply w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400;
+  }
+
+  @screen lg {
+    .responsive-sidebar {
+      @apply translate-x-0;
+    }
+  }
+}
