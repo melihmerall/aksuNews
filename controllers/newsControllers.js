@@ -397,15 +397,7 @@ class newsControllers {
             const activeNews = await newsModel.countDocuments({ status: 'aktif' });
             const deactiveNews = await newsModel.countDocuments({ status: 'deaktif' });
             const totalWriters = await authModel.countDocuments({ role: 'yazar' });
-    
-            console.log('Statistics:', {
-                totalNews,
-                pendingNews,
-                activeNews,
-                deactiveNews,
-                totalWriters
-            });
-    
+            
             return res.status(200).json({
                 totalNews,
                 pendingNews,

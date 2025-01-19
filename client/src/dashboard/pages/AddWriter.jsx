@@ -44,8 +44,8 @@ const AddWriter = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
-      <div className="flex justify-between mb-6">
+    <div className="bg-white rounded-lg shadow-lg p-6 max-w-screen-md mx-auto">
+      <div className="flex flex-wrap justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-700">Yazar Ekle</h2>
         <Link
           className="px-4 py-2 bg-blue-500 rounded-md text-white hover:bg-blue-600 transition duration-300"
@@ -56,7 +56,7 @@ const AddWriter = () => {
       </div>
 
       <form onSubmit={submit} className="space-y-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <div className="flex flex-col gap-y-2">
             <label
               htmlFor="name"
@@ -77,7 +77,7 @@ const AddWriter = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <div className="flex flex-col gap-y-2">
             <label
               htmlFor="email"
@@ -120,7 +120,7 @@ const AddWriter = () => {
         <div className="mt-6 flex justify-end">
           <button
             disabled={loader}
-            className={`px-4 py-2 rounded-md text-white ${loader ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600 transition duration-300"}`}
+            className={`px-4 py-2 rounded-md text-white w-full sm:w-auto ${loader ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600 transition duration-300"}`}
           >
             {loader ? "Loading..." : "Yazar Ekle"}
           </button>

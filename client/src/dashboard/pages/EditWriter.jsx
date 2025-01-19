@@ -62,19 +62,19 @@ const EditWriter = () => {
     };
 
     return (
-        <div className='bg-white rounded-md'>
-            <div className='flex justify-between p-4'>
-                <h2 className='text-xl font-semibold'>Yazar Düzenle</h2>
-                <Link className='px-3 py-[6px] bg-blue-500 rounded-md text-white hover:bg-blue-800' to='/dashboard/writers'>
+        <div className='bg-white shadow-md rounded-md p-6'>
+            <div className='flex flex-wrap justify-between items-center mb-6'>
+                <h2 className='text-2xl font-bold text-gray-700'>Yazar Düzenle</h2>
+                <Link className='px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-800 transition duration-300' to='/dashboard/writers'>
                     Yazarlar
                 </Link>
             </div>
 
             <div className='p-4'>
-                <form onSubmit={handleUpdateWriter}>
-                    <div className='grid grid-cols-2 gap-x-8 mb-3'>
+                <form onSubmit={handleUpdateWriter} className='space-y-6'>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
                         <div className='flex flex-col gap-y-2'>
-                            <label htmlFor="name" className='text-md font-semibold text-gray-600'>Ad Soyad</label>
+                            <label htmlFor="name" className='text-md font-medium text-gray-600'>Ad Soyad</label>
                             <input
                                 onChange={inputHandle}
                                 value={state.name}
@@ -82,17 +82,15 @@ const EditWriter = () => {
                                 type="text"
                                 placeholder='Ad Soyad'
                                 name='name'
-                                className='px-3 py-2 rounded-md outline-0 border border-gray-300 focus:border-blue-500 h-10'
+                                className='px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition'
                                 id='name'
                             />
                         </div>
-
-                      
                     </div>
 
-                    <div className='grid grid-cols-2 gap-x-8 mb-3'>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
                         <div className='flex flex-col gap-y-2'>
-                            <label htmlFor="email" className='text-md font-semibold text-gray-600'>E-posta</label>
+                            <label htmlFor="email" className='text-md font-medium text-gray-600'>E-posta</label>
                             <input
                                 onChange={inputHandle}
                                 value={state.email}
@@ -100,16 +98,14 @@ const EditWriter = () => {
                                 type="email"
                                 placeholder='E-posta'
                                 name='email'
-                                className='px-3 py-2 rounded-md outline-0 border border-gray-300 focus:border-blue-500 h-10'
+                                className='px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition'
                                 id='email'
                             />
                         </div>
-
-                        
                     </div>
 
-                    <div className='mt-4'>
-                        <button disabled={loader} className='px-3 py-[6px] bg-blue-500 rounded-md text-white hover:bg-blue-800'>
+                    <div className='mt-6 flex justify-end'>
+                        <button disabled={loader} className='px-4 py-2 bg-blue-500 rounded-md text-white hover:bg-blue-800 transition'>
                             {loader ? 'Güncelleniyor...' : 'Güncelle'}
                         </button>
                     </div>

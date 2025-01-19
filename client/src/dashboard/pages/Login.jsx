@@ -57,16 +57,20 @@ const Login = () => {
     };
 
     return (
-        <div className='min-h-screen bg-cover bg-center flex items-center justify-center' style={{ backgroundImage: "url('/src/assets/background.jpg')" }}>
+        <div className='min-h-screen bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center'>
             <div className='bg-white shadow-2xl rounded-lg w-[400px]'>
                 <div className='p-8'>
                     <div className='flex justify-center mb-8'>
-                        <img className='w-[150px] transition-transform duration-300 hover:scale-110' src='/src/assets/mainlogo.png' alt='logo' />
+                        <img 
+                            className='w-[150px] transition-transform duration-300 hover:scale-110 drop-shadow-lg' 
+                            src='/src/assets/mainlogo.png' 
+                            alt='logo' 
+                        />
                     </div>
 
                     <form onSubmit={submit} className='space-y-6'>
                         <div className='relative'>
-                            <label htmlFor='email' className='block text-md font-semibold text-gray-700 mb-2'>Email</label>
+                            <label htmlFor='email' className='block text-lg font-bold text-gray-700 mb-2'>Email</label>
                             <input 
                                 value={state.email} 
                                 onChange={inputHandle} 
@@ -74,13 +78,13 @@ const Login = () => {
                                 name='email' 
                                 id='email' 
                                 placeholder='Email adresinizi girin' 
-                                className='w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition shadow-sm'
+                                className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 transition shadow-sm text-gray-700'
                             />
-                            <div className='absolute right-3 top-10 text-gray-400'><i className='fas fa-envelope'></i></div>
+                            <div className='absolute right-3 top-10 text-blue-400'><i className='fas fa-envelope'></i></div>
                         </div>
 
                         <div className='relative'>
-                            <label htmlFor='password' className='block text-md font-semibold text-gray-700 mb-2'>Şifre</label>
+                            <label htmlFor='password' className='block text-lg font-bold text-gray-700 mb-2'>Şifre</label>
                             <input 
                                 onChange={inputHandle} 
                                 value={state.password} 
@@ -88,22 +92,26 @@ const Login = () => {
                                 name='password' 
                                 id='password' 
                                 placeholder='Şifrenizi girin' 
-                                className='w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition shadow-sm'
+                                className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 transition shadow-sm text-gray-700'
                             />
-                            <div className='absolute right-3 top-10 text-gray-400'><i className='fas fa-lock'></i></div>
+                            <div className='absolute right-3 top-10 text-blue-400'><i className='fas fa-lock'></i></div>
                         </div>
 
                         <div>
                             <button 
                                 type='submit' 
                                 disabled={loader} 
-                                className={`w-full py-3 text-white rounded-md font-semibold transition-all ${loader ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500'}`}
+                                className={`w-full py-3 text-white rounded-md font-semibold transition-all ${loader ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 shadow-lg'}`}
                             >
                                 {loader ? 'Loading...' : 'Giriş Yap'} 
                             </button>
                         </div>
-
                     </form>
+
+                    <div className='mt-6 text-center'>
+                        <span className='text-sm text-gray-500'>Hesabınız yok mu?</span> 
+                        <a href='/register' className='text-blue-500 hover:underline'>Kaydol</a>
+                    </div>
                 </div>
             </div>
         </div>

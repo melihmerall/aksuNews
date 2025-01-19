@@ -15,7 +15,6 @@ router.delete('/api/news/delete/:news_id',middleware.auth,newsControllers.delete
 
 router.put('/api/news/status-update/:news_id',middleware.auth,newsControllers.update_news_status)
 
-//  // Frontend Api All
 router.get('/api/all/news',newsControllers.get_all_news)
 router.get('/api/category/all',newsControllers.get_categories)
 
