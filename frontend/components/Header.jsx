@@ -3,53 +3,96 @@ import moment from 'moment';
 import { FaFacebookF } from "react-icons/fa";
 import { FaTwitter } from "react-icons/fa";
 import { FaYoutube } from "react-icons/fa";
-import logo from '../assets/logo.png'
-import adver_image from '../assets/add.png'
-import bg_header from '../assets/header-bg.jpg'
+import logo from '../public/assets/logo.png'
+import adver_image from '../public/assets/add.png'
+import bg_header from '../public/assets/header-bg.jpg'
 import Image from 'next/image';
 import Header_Category from './Header_Category';
+import 'moment/locale/tr'; // Türkçe dil desteğini ekleyin
 
+moment.locale('tr'); // Dil ayarını Türkçe yapın
 
 const Header = () => {
+    const today = new Date().toLocaleDateString("tr-TR", {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+    });
     return (
-        <header className='bg-[#333333] text-[#cccccc]'>
-            <div className='px-5 lg:px-8 flex justify-between items-center py-2 border-b border-[#444444]'>
-                <span className='text-sm font-medium'>{moment().format('LLLL')}</span>
-
-    <div className='flex space-x-2'>
-        <a href="" className='w-8 h-8 flex justify-center items-center bg-[#2045ea] rounded-full hover:bg-slate-500 transition duration-200'><FaFacebookF  /></a>
-
-        <a href="" className='w-8 h-8 flex justify-center items-center bg-[#5271ff] rounded-full hover:bg-slate-500 transition duration-200'><FaTwitter  /></a>
-
-        <a href="" className='w-8 h-8 flex justify-center items-center bg-[#ff5157] rounded-full hover:bg-slate-500 transition duration-200'><FaYoutube  /></a>
-       </div> 
-     </div>
+        <header className='th-header header-layout1'>
+        <div className="header-top">
+            <div className="container">
+                <div className="row justify-content-center justify-content-lg-between align-items-center gy-2">
+                    <div className="col-auto d-none d-lg-block">
+                        <div className="header-links">
+                            <ul>
+                                <li><i className="fal fa-calendar-days"></i><a href="blog.html">{today}</a></li>
+                                <li><a href="about.html">Privacy Policy</a></li>
+                                <li><a href="about.html">Terms & Conditions</a></li>
+                                <li>
+                                    <a className="theme-toggler" href="#">
+                                        <span className="dark"><i className="fas fa-moon"></i>Siyah Mod</span>
+                                        <span className="light"><i className="fas fa-sun-bright"></i>Açık Mod</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div className="col-auto">
+                        <div className="header-links">
+                            <ul>
+                                <li>
+                                    <div className="social-links">
+                                        <a href="https://www.facebook.com/"><i className="fab fa-facebook-f"></i></a>
+                                        <a href="https://www.twitter.com/"><i className="fab fa-twitter"></i></a>
+                                        <a href="https://www.linkedin.com/"><i className="fab fa-linkedin-in"></i></a>
+                                        <a href="https://www.instagram.com/"><i className="fab fa-instagram"></i></a>
+                                        <a href="https://www.youtube.com/"><i className="fab fa-youtube"></i></a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     
-    <div style={{ backgroundImage: `url(${bg_header.src})` }} className='bg-cover bg-center text-center py-6'>
-        <div className='px-5 lg:px-8 flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0'>
-            <div className='md:w-4/12 w-full flex flex-col items-center md:items-start space-y-3'>
-                <Image 
-                className='w-[200px] h-full'
-                alt='logo'
-                src={logo}
-                priority
-                />
-                <h2 className='text-[#cccccc] text-md md:text-md font-semibold tracking-wide text-center md:text-left'>Media that rocks your world</h2>
-            </div>
-            
-            <div className='md:w-8/12 w-full hidden md:flex justify-end'>
-            <Image 
-                className='max-w-full h-auto'
-                alt='add'
-                src={adver_image}
-                priority
-                />
-            </div> 
-        </div> 
-    </div> 
+        <div 
+            className="header-middle text-center text-white py-4" 
+            style={{ 
+                backgroundImage: `url(${bg_header.src})`, 
+                backgroundSize: 'cover', 
+                backgroundPosition: 'center' 
+            }}
+        >
+            <div className="container">
+                <div className="row justify-content-center justify-content-lg-between align-items-center">
+                    
+                    {/* Logo Alanı */}
+                    <div className="col-auto d-none d-lg-block">
+                        <div className="header-logo">
+                            <a href="home-newspaper.html">
+                                <Image className="light-img" src={logo} alt="Tnews" width={200} height={100} priority />
+                            </a>
+                        </div>
+                    </div>
 
-        <Header_Category/>  
+                    {/* Reklam Alanı */}
+                    <div className="col-lg-8 text-end d-none d-md-block">
+                        <div className="header-ads">
+                            <a href="https://themeforest.net/user/themeholy/portfolio">
+                                <Image className="img-fluid" src={adver_image} alt="ads" width={728} height={90} priority />
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    
+
+        <Header_Category/> 
         </header>
     );
 };

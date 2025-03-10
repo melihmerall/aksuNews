@@ -3,25 +3,28 @@ import Title from '../Title';
 import SimpleDetailsNewCard from './item/SimpleDetailsNewCard';
 import NewsCard from './item/NewsCard';
 
-const DetailsNewsRow = ({news,category,type}) => {
+const DetailsNewsRow = ({ category, type }) => {
     return (
-        <div className='w-full flex flex-col gap-6 p-6 bg-white rounded-lg shadow-md'>
+        <div className="w-full flex flex-col gap-6 p-6 bg-white rounded-lg shadow-lg transition duration-500 hover:shadow-xl">
+            {/* Başlık */}
             <Title title={category} />
 
-        <div className='grid lg:grid-cols-2 grid-cols-1 gap-6'>
-            <SimpleDetailsNewCard news={news[0]} type={type} height={300} />
-        
-        <div className='grid grid-cols-1 gap-2'>
-            {
-                news.map((item, i) => {
-                    if (i < 4) {
-                        return <NewsCard item={item} key={i} />
-                    }
-                })}
+            {/* Haber Kartları */}
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6">
+                {/* Büyük Haber Kartı */}
+                <div className="overflow-hidden rounded-lg">
+                    <SimpleDetailsNewCard type={type} height={300} />
+                </div>
 
-        </div>
-
-        </div> 
+                {/* Küçük Haber Kartları */}
+                <div className="grid grid-cols-1 gap-4">
+                    {[1, 2, 3].map((item, i) => (
+                        <div key={i} className="transition-transform duration-300 hover:scale-105">
+                            <NewsCard item={item} />
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 };

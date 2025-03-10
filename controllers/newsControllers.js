@@ -39,7 +39,7 @@ class newsControllers {
                 fs.renameSync(image.filepath, filePath);
 
                 // Generate the URL for the uploaded image
-                const imageUrl = `/src/assets/news_images/${fileName}`;
+                const imageUrl = `/public/assets/news_images/${fileName}`;
 
                 const news = await newsModel.create({
                     writerId: id,
@@ -123,7 +123,7 @@ class newsControllers {
                     const filePath = path.join(uploadDir, fileName);
 
                     fs.copyFileSync(image.filepath, filePath);
-                    imageUrl = `/src/assets/news_images/${fileName}`;
+                    imageUrl = `/public/assets/news_images/${fileName}`;
                 }
 
                 const news = await newsModel.findByIdAndUpdate(news_id, {
@@ -170,7 +170,7 @@ class newsControllers {
     };
 
     get_all_news = async (req,res) => {
-
+console.log('get_all_news')
         try {
             const category_news = await newsModel.aggregate([
                 {
@@ -178,7 +178,7 @@ class newsControllers {
                 },
                 {
                     $match: {
-                        status: 'active'
+                        status: 'aktif'
                     }
                 },
                 {
@@ -213,6 +213,7 @@ class newsControllers {
         for (let i = 0; i < category_news.length; i++) {
             news[category_news[i].category] = category_news[i].news 
         }
+        console.log(news)
         return res.status(200).json({ news }) 
     
         } catch (error) {
@@ -223,7 +224,7 @@ class newsControllers {
     //End Method 
     
     get_categories = async(req,res) => {
-    
+
         try {
             const categories = await newsModel.aggregate([
                 {

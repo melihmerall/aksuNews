@@ -15,7 +15,7 @@ import CreateNews from './dashboard/pages/CreateNews';
 import storeContext from './context/storeContext';
 import EditWriter from './dashboard/pages/EditWriter';
 import EditNews from './dashboard/pages/EditNews';
- 
+import React from 'react';
 
 function App() { 
 

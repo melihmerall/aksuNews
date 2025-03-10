@@ -2,7 +2,7 @@ const production = 'production'
 const local = 'dev'
 
 const local_api_url = 'http://localhost:5000'
-const production_api_url = 'http://localhost:5000'
+const production_api_url = 'http://localhost:5002'
 
 const mode = local
 let base_api_url = ''

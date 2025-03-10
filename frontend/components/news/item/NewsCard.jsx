@@ -2,38 +2,40 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
-const NewsCard = ({item}) => {
+const NewsCard = ({ item }) => {
     return (
-<div className='bg-[#e5effe] shadow-md rounded-md flex p-4 hover:shadow-md transition-shadow duration-300'>
-    <div className='relative flex-shrink-0 overflow-hidden rounded-md group'>
-        <div className='group-hover:scale-110 transform transition-transform duration-700 w-[100px] md:w-[160px] h-[93px] lg:w-[100px] relative'>
-            <Image
+        <div className="bg-light shadow-sm rounded d-flex p-3 align-items-center transition-shadow hover-shadow-md">
+            {/* Haber Görseli */}
+            <div className="position-relative flex-shrink-0 overflow-hidden rounded">
+                <div className="position-relative w-100 h-auto">
+                <Image
             layout='fill'
             className='object-cover rounded-md'
-            src={ item?.image } alt='Image'
+            src="https://res.cloudinary.com/dbxtifnah/image/upload/v1726960712/news_images/m3xqhhcapfjaudcdlkfl.png" alt='Image'
             />
-        
-        <div className='absolute inset-0 bg-black bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md'> 
-        </div> 
-        </div>  
-    </div> 
 
-    <div className='flex flex-col justify-between pl-4 w-full'>
-            <Link href={`/news/category/${item?.category}`} className='text-xs font-semibold text-blue-600 hover:underline'>
-            { item?.category }
-            </Link>
+                </div>
 
-            <Link href={`/news/${item?.slug}`} className='text-base font-semibold text-gray-800 hover:text-blue-600 transition-colors duration-300'>
-            { item?.title }
-            </Link> 
-            <div className='flex gap-x-3 text-xs text-gray-500'>
-                <span className='font-semibold'> { item?.date }</span>
-                <span className='font-semibold'>By { item?.writerName }</span>
+                {/* Hover Efekti */}
+                <div className="position-absolute w-100 h-100 start-0 top-0 bg-dark opacity-0 hover-opacity-50 transition-all rounded"></div>
             </div>
-      </div>    
 
+            {/* Haber İçeriği */}
+            <div className="flex-grow-1 ps-3">
+                <Link href={`/`} className="text-decoration-none text-primary fw-semibold small">
+                    Kategori Adı
+                </Link>
 
-</div>
+                <Link href={`/`} className="d-block text-dark fw-semibold h6 mt-1 hover-text-primary transition-colors">
+                    Maraştan haberler
+                </Link>
+
+                <div className="d-flex gap-2 text-muted small">
+                    <span className="fw-semibold">02-09-2024</span>
+                    <span className="fw-semibold">Yazar</span>
+                </div>
+            </div>
+        </div>
     );
 };
 

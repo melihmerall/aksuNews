@@ -1,31 +1,40 @@
-const express = require('express')
-const app = express()
-const dotenv = require('dotenv')
-const cors = require('cors')
-const body_parser = require('body-parser')
-const db_connect = require('./utils/db')
+const express = require('express');
+const cors = require('cors');
+const app = express();
+const dotenv = require('dotenv');
+const bodyParser = require('body-parser');
+const db_connect = require('./utils/db');
 
-dotenv.config()
+dotenv.config();
 
-app.use(body_parser.json())
+// ✅ CORS Middleware (Önerilen Ayarlar)
+const allowedOrigins = [
+    'http://localhost:3000', // Next.js geliştirme sunucusu
+    'http://localhost:5173', // Vite veya Next.js
 
-if (process.env.mode === 'production') {
-    app.use(cors())
-} else {
-    app.use(cors({
-        origin: ["http://localhost:5173" , "http://localhost:3000"]
-    }))
-}
+    'http://192.168.18.183:3000', // Mobil veya ağ içi erişim
+    'https://your-production-domain.com' // Canlı ortam
+];
 
+app.use(cors({
+    origin: allowedOrigins, 
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], 
+    allowedHeaders: ['Content-Type', 'Authorization'], 
+    credentials: true // Çerezleri ve kimlik doğrulama başlıklarını destekler
+}));
 
+// 📌 Body Parser Middleware
+app.use(bodyParser.json());
 
+// 📌 API Rotaları
+app.use('/', require('./routes/authRoutes'));
+app.use('/', require('./routes/newsRoutes'));
 
-const port = process.env.port 
+app.get('/', (req, res) => res.send("Hello Easy"));
 
-app.use('/',require('./routes/authRoutes'))
-app.use('/',require('./routes/newsRoutes'))
-app.get('/', (req,res) => res.send("Hello Easy"))
+// 📌 Veritabanı Bağlantısı
+db_connect();
 
-db_connect()
-
-app.listen(port,() => console.log(`Server is running on port ${port}`))
+// 📌 Sunucuyu Başlat
+const port = process.env.PORT || 5137;
+app.listen(port, () => console.log(`🚀 Server is running on port ${port}`));

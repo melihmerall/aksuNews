@@ -4,68 +4,51 @@ import SimpleDetailsNewCard from '@/components/news/item/SimpleDetailsNewCard';
 import PopularNews from '@/components/news/PopularNews';
 import RecentNews from '@/components/news/RecentNews';
 import Search from '@/components/news/Search';
-import { base_api_url } from '@/config/config';
 import React from 'react';
- 
-const CategoryNews = async ({params}) => {
 
-    const { category } = params; 
-    const res = await fetch(`${base_api_url}/api/category/news/${category}`,{
-        next: {
-            revalidate: 1
-        }
-    })
-   
-    const {news} = await res.json()
-
-
+const Page = () => {
     return (
-<div>
-    <div className='bg-white shadow-sm py-4'>
-        <div className='px-4 md:px-8 w-full'>
-        <Breadcrumb one={category} />
-        </div> 
-    </div>
-
-<div className='bg-slate-200 w-full'>
-    <div className='px-4 md:px-8 w-full py-8'>
-        <div className='flex flex-wrap'>
-            <div className='w-full xl:w-8/12'>
-            <div className='w-full pr-0 xl:pr-4'>
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3'>
-            {
-                news && news.length > 0 && news.map((item,i) => (
-                    <SimpleDetailsNewCard news={item} type="details_news" height={200} />
-                ))
-            }
-
-             </div>
-            </div> 
+        <div>
+            {/* Breadcrumb Section */}
+            <div className="bg-white shadow-md py-4 border-b border-gray-300">
+                <div className="container px-4 md:px-8">
+                    <Breadcrumb one="Category" two="Sports" />
+                </div>
             </div>
 
-        <div className='w-full xl:w-4/12'>
-        <div className='w-full pl-0 xl:pl-4'>
-            <div className='flex flex-col gap-y-8'>
-                <Search/>
-                <RecentNews/>
-        <div className='p-4 bg-white'>
-            <Category titleStyle={"text-gray-700 font-bold"} /> 
-            </div> 
-           </div> 
-          </div> 
-         </div> 
-        </div> 
+            {/* Main Content */}
+            <div className="bg-gray-100 py-10">
+                <div className="container px-4 md:px-8">
+                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                        {/* Left Content - News Grid */}
+                        <div className="xl:col-span-2">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {[1,2,3,4,5,6].map((item, i) => (
+                                    <SimpleDetailsNewCard key={i} news={item} type="details_news" height={200} />
+                                ))}
+                            </div>
+                        </div>
 
-    <div className='pt-8'>
-        <PopularNews/>
+                        {/* Right Sidebar */}
+                        <div className="xl:col-span-1">
+                            <div className="space-y-6">
+                                <Search />
+                                <RecentNews />
+                                <div className="p-4 bg-white shadow-md rounded-lg">
+                                    <Category titleStyle="text-gray-700 font-bold" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-    </div>
-    </div> 
-</div>
-
-    
-</div>
+                    {/* Popular News Section */}
+                    <div className="pt-10">
+                        <PopularNews />
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 };
 
-export default CategoryNews;
+export default Page;

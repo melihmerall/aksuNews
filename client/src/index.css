@@ -1,8 +1,7 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-
 
 /* Media queries for responsive design */
 @media (max-width: 768px) {

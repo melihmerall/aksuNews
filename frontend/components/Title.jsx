@@ -1,10 +1,10 @@
 import React from 'react';
 
-const Title = ({title}) => {
+const Title = ({ title, className = "" }) => {
     return (
-        <div className='text-xl font-bold text-[#333333] relative before:absolute before:w-[4px] before:bg-[#5271ff] before:h-full before:-left-0 pl-3'>
+        <div className={`text-2xl font-semibold text-[#222] relative before:absolute before:w-[5px] before:bg-[#5271ff] before:h-full before:left-0 pl-4 ${className}`}>
             {title}
-        </div> 
+        </div>
     );
 };
 

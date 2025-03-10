@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import storeContext from '../../context/storeContext';
 
 const Login = () => {
-
+console.log("Login -> base_url", base_url);
     const navigate = useNavigate();
     const [loader, setLoader] = useState(false);
     const { dispatch } = useContext(storeContext);
@@ -108,10 +108,7 @@ const Login = () => {
                         </div>
                     </form>
 
-                    <div className='mt-6 text-center'>
-                        <span className='text-sm text-gray-500'>Hesabınız yok mu?</span> 
-                        <a href='/register' className='text-blue-500 hover:underline'>Kaydol</a>
-                    </div>
+                 
                 </div>
             </div>
         </div>
