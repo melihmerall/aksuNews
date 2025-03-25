@@ -72,7 +72,7 @@ const Header = () => {
                     {/* Logo Alanı */}
                     <div className="col-auto d-none d-lg-block">
                         <div className="header-logo">
-                            <a href="home-newspaper.html">
+                            <a href="/">
                                 <Image className="light-img" src={logo} alt="Tnews" width={200} height={100} priority />
                             </a>
                         </div>

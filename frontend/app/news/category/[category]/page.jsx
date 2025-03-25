@@ -1,54 +1,75 @@
-import Breadcrumb from '@/components/Breadcrumb';
-import Category from '@/components/Category';
-import SimpleDetailsNewCard from '@/components/news/item/SimpleDetailsNewCard';
-import PopularNews from '@/components/news/PopularNews';
-import RecentNews from '@/components/news/RecentNews';
-import Search from '@/components/news/Search';
-import React from 'react';
+import Breadcrumb from "@/components/Breadcrumb";
+import Category from "@/components/Category";
+import SimpleDetailsNewCard from "@/components/news/item/SimpleDetailsNewCard";
+import PopularNews from "@/components/news/PopularNews";
+import RecentNews from "@/components/news/RecentNews";
+import Search from "@/components/news/Search";
+import { base_api_url } from "@/config/config";
+import React from "react";
 
-const Page = () => {
-    return (
-        <div>
-            {/* Breadcrumb Section */}
-            <div className="bg-white shadow-md py-4 border-b border-gray-300">
-                <div className="container px-4 md:px-8">
-                    <Breadcrumb one="Category" two="Sports" />
-                </div>
-            </div>
+// ✅ Server Component içinde fetch işlemi yapılıyor
+const CategoryNews = async ({ params }) => {
+  const { category } = await params;
 
-            {/* Main Content */}
-            <div className="bg-gray-100 py-10">
-                <div className="container px-4 md:px-8">
-                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                        {/* Left Content - News Grid */}
-                        <div className="xl:col-span-2">
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {[1,2,3,4,5,6].map((item, i) => (
-                                    <SimpleDetailsNewCard key={i} news={item} type="details_news" height={200} />
-                                ))}
-                            </div>
-                        </div>
+  let news = [];
+  try {
+    const res = await fetch(`${base_api_url}/api/category/news/${category}`, {
+      next: { revalidate: 1 }, // Sayfanın 1 saniye içinde yeniden validasyon yapmasını sağlıyor
+    });
 
-                        {/* Right Sidebar */}
-                        <div className="xl:col-span-1">
-                            <div className="space-y-6">
-                                <Search />
-                                <RecentNews />
-                                <div className="p-4 bg-white shadow-md rounded-lg">
-                                    <Category titleStyle="text-gray-700 font-bold" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    if (!res.ok) throw new Error("Failed to fetch news");
+    const data = await res.json();
+    news = data.news;
+    console.log("news:", news + " " + category) ;
+  } catch (error) {
+    console.error("Error fetching news:", error);
+  }
 
-                    {/* Popular News Section */}
-                    <div className="pt-10">
-                        <PopularNews />
-                    </div>
-                </div>
-            </div>
+  return (
+    <div>
+      {/* Breadcrumb Section */}
+      <div className="breadcumb-wrapper">
+        <div className="container">
+          <ul className="breadcumb-menu">
+            <li><a href="/">Anasayfa</a></li>
+            <li><a href={`/news/category/${category}`}>{category}</a></li>
+          </ul>
         </div>
-    );
+      </div>
+
+      {/* News Section */}
+      <section className="space">
+        <div className="container">
+          <div className="row gy-30">
+            {news.length > 0 ? (
+              news.slice(0, 7).map((item) => (
+                <div key={item.id} className="col-xl-3 col-lg-4 col-sm-6">
+                  <div className="blog-style1">
+                    <div className="blog-img">
+                      <a href={`/news/${item.slug}`}><img src={`http://localhost:5173${item?.image}`} alt={item.title} /></a>
+                      <a data-theme-color="#59C2D6" href={`/news/category/${item.category}`} className="category">
+                        {category}
+                      </a>
+                    </div>
+                    <h3 className="box-title-20">
+                      <a className="hover-line" href={`/news/${item.slug}`}>{item.title}</a>
+                    </h3>
+                    <div className="blog-meta">
+                      <a ><i className="far fa-user"></i>{item.writerName}</a>
+                      <a href="#"><i className="fal fa-calendar-days"></i>  {new Date(item.createdAt).toLocaleDateString()}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p>Bu kategoride henüz haber bulunmamaktadır.</p>
+            )}
+          </div>
+        </div>
+      </section>
+    </div>
+  );
 };
 
-export default Page;
+export default CategoryNews;

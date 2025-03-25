@@ -7,7 +7,6 @@ const path = require("path");
 
 class authController {
   login = async (req, res) => {
-    console.log("sa");
     const { email, password } = req.body;
     if (!email || !password) {
       return res.status(400).json({ message: "Alanları Doldurunuz." });
@@ -138,8 +137,6 @@ class authController {
           return res.status(400).json({ message: "Form parsing error" });
         }
 
-        console.log("Received fields:", fields);
-        console.log("Received files:", files);
 
         const { name, email } = fields;
 

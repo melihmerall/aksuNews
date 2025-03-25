@@ -22,13 +22,17 @@ const newsSchema = new Schema({
         type: String,
         required: true
     }, 
+    video: {
+        type: String,  // **Video URL için yeni alan**
+        default: null
+    },
     category: {
         type: String,
         required: true
     },
     bigCategory: {
         type: String,
-        required: true
+        required: false
     },
     description: {
         type: String,
@@ -45,6 +49,8 @@ const newsSchema = new Schema({
         type: Number,
         default: 0
     },
-},{ timestamps: true })
+},{ timestamps: true });
+
+
 
 module.exports = model('aksuNews',newsSchema)

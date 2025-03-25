@@ -3,63 +3,101 @@ const fs = require('fs');
 const path = require('path');
 const newsModel = require('../models/newsModel');
 const authModel = require('../models/authModel');
+const categoryModel = require('../models/categoryModel');
 const galleryModel = require('../models/galleryModel');
 const { mongo: { ObjectId } } = require('mongoose');
 const moment = require('moment');
 
 class newsControllers {
 
-    add_news = async (req, res) => {
-        const { id, name } = req.userInfo;
-        const form = formidable({ multiples: true });
+     add_news = async (req, res) => {
+    const { id, name } = req.userInfo;
+    const form = formidable({ multiples: true });
 
-        try {
-            form.parse(req, async (err, fields, files) => {
-                if (err) {
-                    return res.status(400).json({ message: 'Form parsing error' });
+    try {
+        form.parse(req, async (err, fields, files) => {
+            if (err) {
+                return res.status(400).json({ message: 'Form parsing error' });
+            }
+
+            const { title,slug, description, bigCategory, category } = fields;
+            if (!files.image || files.image.length === 0) {
+                return res.status(400).json({ message: 'Resim dosyası gerekli' });
+            }
+            const image = files.image[0];
+
+            // Resim için upload path oluştur
+            const uploadDir = path.join(__dirname, '..', 'client', 'src', 'assets', 'news_images');
+            if (!fs.existsSync(uploadDir)) {
+                fs.mkdirSync(uploadDir, { recursive: true });
+            }
+
+            // Resim dosyasını kaydet
+            const fileName = `${Date.now()}-${image.originalFilename}`;
+            const filePath = path.join(uploadDir, fileName);
+            fs.renameSync(image.filepath, filePath);
+            const imageUrl = `/src/assets/news_images/${fileName}`;
+
+            // **Video Yükleme İşlemi**
+            let videoUrl = null;
+            if (files.video && files.video.length > 0) {
+                const video = files.video[0];
+                const videoDir = path.join(__dirname, '..', 'client', 'src', 'assets', 'news_videos');
+                if (!fs.existsSync(videoDir)) {
+                    fs.mkdirSync(videoDir, { recursive: true });
                 }
+                const videoFileName = `${Date.now()}-${video.originalFilename}`;
+                const videoFilePath = path.join(videoDir, videoFileName);
+                fs.renameSync(video.filepath, videoFilePath);
+                videoUrl = `/src/assets/news_videos/${videoFileName}`;
+            }
 
-                const { title, description, bigCategory, category } = fields;
-                if (!files.image || files.image.length === 0) {
-                    return res.status(400).json({ message: 'Resim dosyası gerekli' });
-                }
-                const image = files.image[0];
-
-                // Define the upload path
-                const uploadDir = path.join(__dirname, '..', 'client', 'src', 'assets', 'news_images');
-                if (!fs.existsSync(uploadDir)) {
-                    fs.mkdirSync(uploadDir, { recursive: true });
-                }
-
-                // Generate a unique filename
-                const fileName = `${Date.now()}-${image.originalFilename}`;
-                const filePath = path.join(uploadDir, fileName);
-
-                // Move the file to the upload directory
-                fs.renameSync(image.filepath, filePath);
-
-                // Generate the URL for the uploaded image
-                const imageUrl = `/public/assets/news_images/${fileName}`;
-
-                const news = await newsModel.create({
-                    writerId: id,
-                    writerName: name,
-                    title: title[0].trim(),
-                    slug: title[0].trim().split(' ').join('-'),
-                    category: category[0].trim(),
-                    bigCategory: bigCategory[0].trim(),
-                    description: description[0].trim(),
-                    date: moment().format('LL'),
-                    image: imageUrl,
-                    status: 'onayBekliyor'
-                });
-
-                return res.status(201).json({ message: 'Haber Başarıyla Eklendi', news });
+            const news = await newsModel.create({
+                writerId: id,
+                writerName: name,
+                title: title[0].trim(),
+                slug: slug[0].trim(),
+                category: category[0].trim(),
+                description: description[0].trim(),
+                date: moment().format('LL'),
+                image: imageUrl,
+                video: videoUrl, // **Video linkini kaydet**
+                status: 'onayBekliyor'
             });
-        } catch (error) {
-            return res.status(500).json({ message: 'Sunucu Hatası' });
+
+            return res.status(201).json({ message: 'Haber Başarıyla Eklendi', news });
+        });
+    } catch (error) {
+        return res.status(500).json({ message: 'Sunucu Hatası' });
+    }
+};
+
+add_category = async (req, res) => {
+    try {
+        const { name, slug } = req.body; // Kategori adı ve slug al
+
+        if (!name || !slug) {
+            return res.status(400).json({ message: "Kategori adı ve slug gereklidir." });
         }
-    };
+
+        // 1️⃣ Aynı isimde kategori olup olmadığını kontrol et
+        const existingCategory = await categoryModel.findOne({ $or: [{ name }, { slug }] });
+
+        if (existingCategory) {
+            return res.status(400).json({ message: "Bu kategori zaten mevcut." });
+        }
+
+        // 2️⃣ Yeni kategoriyi kaydet
+        const newCategory = new categoryModel({ name, slug });
+        await newCategory.save();
+
+        return res.status(201).json({ message: "Kategori başarıyla eklendi.", category: newCategory });
+
+    } catch (error) {
+        console.error("Kategori ekleme hatası:", error);
+        return res.status(500).json({ message: "Sunucu hatası." });
+    }
+};
     //End Method 
 
     get_images = async (req, res) => {
@@ -106,10 +144,9 @@ class newsControllers {
                 if (err) {
                     return res.status(400).json({ message: 'Form parsing error' });
                 }
-                console.log(fields);
 
 
-                const { title, description, category, bigCategory, status } = fields;
+                const { title, description, category, status } = fields;
                 let imageUrl = '';
 
                 if (files.image && files.image.length > 0) {
@@ -132,7 +169,6 @@ class newsControllers {
                     description: description[0].trim(),
                     image: imageUrl,
                     category: category[0].trim(),
-                    bigCategory: bigCategory[0].trim(),
                     status: status[0].trim()
                 });
 
@@ -170,7 +206,6 @@ class newsControllers {
     };
 
     get_all_news = async (req,res) => {
-console.log('get_all_news')
         try {
             const category_news = await newsModel.aggregate([
                 {
@@ -213,7 +248,6 @@ console.log('get_all_news')
         for (let i = 0; i < category_news.length; i++) {
             news[category_news[i].category] = category_news[i].news 
         }
-        console.log(news)
         return res.status(200).json({ news }) 
     
         } catch (error) {
@@ -223,32 +257,58 @@ console.log('get_all_news')
     }
     //End Method 
     
-    get_categories = async(req,res) => {
-
+    get_categories = async (req, res) => {
         try {
-            const categories = await newsModel.aggregate([
+            // 1️⃣ Kategorileri categoryModel'den çekiyoruz
+            const categories = await categoryModel.find({}, { name: 1, slug: 1 });
+    
+            // 2️⃣ Her kategorinin haber sayısını hesaplıyoruz
+            const categoryCounts = await newsModel.aggregate([
                 {
                     $group: {
                         _id: '$category',
-                        count: {$sum: 1}
-                    }
-                },
-                {
-                    $project: {
-                        _id: 0,
-                        category: "$_id", 
-                        count: 1
+                        count: { $sum: 1 }
                     }
                 }
-            ])
-            return res.status(200).json({categories})
+            ]);
+    
+            // 3️⃣ Haber sayısını kategoriye ekle
+            const updatedCategories = categories.map(cat => {
+                const matchedCategory = categoryCounts.find(c => c._id === cat.name);
+                return {
+                    category: cat.name,
+                    slug: cat.slug,
+                    count: matchedCategory ? matchedCategory.count : 0 // Eğer haber yoksa 0 yap
+                };
+            });
+    
+            return res.status(200).json({ categories: updatedCategories });
+    
         } catch (error) {
-            return res.status(500).json({message: 'Internal server Error'})
+            return res.status(500).json({ message: 'Internal Server Error' });
         }
+    };
     
+//End Method 
+get_category_news = async (req, res) => {
+    const { category } = req.params; 
+
+    try {
+
+        // 2️⃣ Kategoriye göre haberleri getir
+        const news = await newsModel.find({
+            category: category, // Kategorinin gerçek adı
+        });
+
+        console.log("Haberler:", news);
+
+        return res.status(200).json({ news });
+
+    } catch (error) {
+        console.error("Hata oluştu:", error);
+        return res.status(500).json({ message: 'Internal Server Error' });
     }
-    
-    //End Method 
+};
     
     
     get_details_news = async (req, res) => {
@@ -282,48 +342,50 @@ console.log('get_all_news')
     }
     //End Method 
     
-    get_category_news = async (req, res) => {
-        const {category} =  req.params
+
     
-        try {
-            const news = await newsModel.find({
-                $and: [
-                    {
-                        category: {
-                            $eq: category
-                        }
-                    },
-                    {
-                        status: {
-                            $eq: 'active'
-                        }
-                    }
-                ]
-            })
-    
-            return res.status(201).json({ news })
-        } catch (error) {
-            return res.status(500).json({message: 'Internal server Error'})
-        }
-        
-    }
     //End Method 
     
     get_popular_news = async (req, res) => {
     
         try {
-            const popularNews = await newsModel.find({ status: 'active' }).sort({count: -1 }).limit(4)
+            const popularNews = await newsModel.find({ status: 'aktif' }).sort({count: -1 }).limit(4)
             return res.status(200).json({ popularNews })
         } catch (error) {
             return res.status(500).json({message: 'Internal server Error'})
         }
     
     }
+
+    get_latest_eleven_news = async (req, res) => {
+        try {
+            const latestNews = await newsModel.find({ status: 'aktif', video: null }) // Video değeri null olan haberleri getir
+            .sort({ createdAt: -1 }) // En yeni haberleri almak için azalan sıralama
+            .limit(11); // En son eklenen 11 haberi getir
+            
+            return res.status(200).json({ latestNews });
+        } catch (error) {
+            return res.status(500).json({ message: 'Internal server Error' });
+        }
+    };
     //End Method 
+    get_video_news = async (req, res) => {
+        try {
+            const videoNews = await newsModel.find({ 
+                status: 'aktif', 
+                video: { $ne: null } // Video değeri NULL OLMAYAN haberleri getir
+            })
+            .sort({ createdAt: -1 }) // En yeni videolu haberleri sıralayarak getir
+            .limit(4); // Sadece 4 tane haber getir
     
+            return res.status(200).json({ videoNews });
+        } catch (error) {
+            return res.status(500).json({ message: 'Internal Server Error' });
+        }
+    };
     get_latest_news = async (req, res) => {
         try {
-            const news = await newsModel.find({ status: 'active' }).sort({createdAt: -1 }).limit(5)
+            const news = await newsModel.find({ status: 'aktif' }).sort({createdAt: -1 }).limit(5)
             return res.status(200).json({ news })
         } catch (error) {
             return res.status(500).json({message: 'Internal server Error'})
@@ -333,7 +395,8 @@ console.log('get_all_news')
     
     get_recent_news = async (req, res) => {
         try {
-            const news = await newsModel.find({ status: 'active' }).sort({createdAt: -1 }).skip(6).limit(5)
+            const news = await newsModel.find({ status: 'aktif' }).sort({createdAt: -1 }).limit(5)
+            console.log(news)
             return res.status(200).json({ news })
         } catch (error) {
             return res.status(500).json({message: 'Internal server Error'})
@@ -347,7 +410,7 @@ console.log('get_all_news')
             const images = await newsModel.aggregate([
                 {
                     $match:{
-                        status: 'active'
+                        status: 'aktif'
                     }
                 },
                 {
@@ -378,7 +441,7 @@ console.log('get_all_news')
             }
     
             const news = await newsModel.find({
-                status: 'active',
+                status: 'aktif',
                 title: { $regex: value, $options: 'i' }
             })
             return res.status(200).json({ news })

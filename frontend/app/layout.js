@@ -2,7 +2,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Script from "next/script";
-
+import { DateProvider } from './DateContext';
 export default function RootLayout({ children }) {
   return (
     <html className="no-js" data-theme="light" lang="tr">
@@ -22,9 +22,11 @@ export default function RootLayout({ children }) {
       </head>
 
       <body>
-        <Header />
-        {children}
-        <Footer />
+      <DateProvider>
+          <Header />
+          {children}
+          <Footer />
+        </DateProvider>
 
         {/* jQuery ve Plugin Scriptleri */}
         <Script src="/assets/js/vendor/jquery-3.6.0.min.js" strategy="lazyOnload" />

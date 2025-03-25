@@ -12,6 +12,8 @@ import AddWriter from './dashboard/pages/AddWriter';
 import Writers from './dashboard/pages/Writers';
 import Writerindex from './dashboard/pages/Writerindex';
 import CreateNews from './dashboard/pages/CreateNews';
+import CreateCategory from './dashboard/pages/CreateCategory';
+
 import storeContext from './context/storeContext';
 import EditWriter from './dashboard/pages/EditWriter';
 import EditNews from './dashboard/pages/EditNews';
@@ -37,6 +39,7 @@ function App() {
           <Route path='' element={<ProtectRole role='admin' />}>
             <Route path='admin' element={<Adminindex/>} />
             <Route path='writer/add' element={<AddWriter/>} />
+            <Route path='category/create' element={<CreateCategory/>} />
             <Route path='writers' element={<Writers/>} />
             <Route path='writer/edit/:id' element={<EditWriter/>} />
           </Route> 

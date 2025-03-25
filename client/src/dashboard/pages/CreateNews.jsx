@@ -3,26 +3,28 @@ import { Link } from 'react-router-dom';
 import { FaImages } from "react-icons/fa6";
 import JoditEditor from 'jodit-react';
 import Gallery from '../components/Gallery';
-import { base_url } from '../../config/config';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import storeContext from '../../context/storeContext';
 import { useNavigate } from 'react-router-dom';
-
+import { set } from 'mongoose';
+import { base_url } from '../../config/config';
 const CreateNews = () => {
     const { store } = useContext(storeContext);
     const navigate = useNavigate();
+    const [categories, setCategories] = useState([]);
 
     const [loader, setLoader] = useState(false);
     const [show, setShow] = useState(false);
-
+    const [video, setVideo] = useState('');
+    const [videoPreview, setVideoPreview] = useState('');
     const editor = useRef(null);
     const [title, setTitle] = useState('');
+    const [slug, setSlug] = useState('');
     const [image, setImage] = useState('');
     const [img, setImg] = useState('');
     const [description, setDescription] = useState('');
     const [category, setCategory] = useState('');
-    const [bigCategory, setBigCategory] = useState('');
     const [status, setStatus] = useState('');
 
     const imageHandle = (e) => {
@@ -32,7 +34,26 @@ const CreateNews = () => {
             setImage(files[0]);
         }
     };
-
+    const videoHandle = (e) => {
+        const { files } = e.target;
+        if (files.length > 0) {
+            setVideo(files[0]);
+            setVideoPreview(URL.createObjectURL(files[0]));
+        }
+    };
+    useEffect(() => {
+        const fetchCategories = async () => {
+          try {
+            const res = await fetch(`${base_url}/api/category/all`);
+            const data = await res.json();
+            setCategories(data.categories); // API'den dönen kategorileri state'e kaydet
+          } catch (error) {
+            console.error("Kategoriler yüklenirken hata oluştu:", error);
+          }
+        };
+    
+        fetchCategories();
+      }, []);
     const statusHandle = (e) => {
         setStatus(e.target.value);
     };
@@ -45,18 +66,21 @@ const CreateNews = () => {
     const added = async (e) => {
         e.preventDefault();
 
-        if (!title || !description || !image || !category || !bigCategory || !status) {
+        if (!title || !description || !image || !category || !status) {
             toast.error('Lütfen tüm alanları doldurunuz');
             return;
         }
         const formData = new FormData();
         formData.append('title', title.trim());
+        formData.append('slug', slug.trim());
+
         formData.append('description', description.trim());
         formData.append('image', image);
         formData.append('category', category.trim());
-        formData.append('bigCategory', bigCategory.trim());
         formData.append('status', status.trim());
-
+        if (video) {
+            formData.append('video', video);
+        }
         try {
             setLoader(true);
             const { data } = await axios.post(
@@ -73,11 +97,13 @@ const CreateNews = () => {
             toast.success(data.message);
 
             setTitle('');
+            setSlug('');
             setDescription('');
             setCategory('');
-            setBigCategory('');
             setImage('');
             setImg('');
+            setVideo('');
+            setVideoPreview('');
             navigate('/dashboard/news');
         } catch (error) {
             console.error('Add News Error:', error);
@@ -141,45 +167,34 @@ const CreateNews = () => {
                     <label htmlFor="title" className='block text-md font-medium text-gray-600 mb-2'>Başlık</label>
                     <input value={title} onChange={(e) => setTitle(e.target.value)} type="text" placeholder='Haber Başlığını Girin' name='title' id='title' className='w-full px-4 py-2 border rounded-md border-gray-300 focus:border-blue-500 outline-none transition h-10' required />
                 </div>
-
+                <div>
+                    <label htmlFor="slug" className='block text-md font-medium text-gray-600 mb-2'>Seo Url</label>
+                    <input value={slug} onChange={(e) => setSlug(e.target.value)} type="text" placeholder='Seo Url Başlığını Girin' name='title' id='title' className='w-full px-4 py-2 border rounded-md border-gray-300 focus:border-blue-500 outline-none transition h-10' required />
+                </div>
                 <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
                     <div>
                         <label htmlFor="category" className='block text-md font-medium text-gray-600 mb-2'>Kategori</label>
                         <select 
-                            onChange={categoryHandle}
-                            value={category}
-                            required 
-                            name="category" 
-                            id='category' 
-                            className='w-full px-4 py-2 rounded-md border border-gray-300 focus:border-blue-500 outline-none transition h-10'
-                        >
-                            <option value="">--- Kategori Seçin ---</option>
-                            <option value="Genel">Genel</option>
-                            <option value="Eğitim">Eğitim</option>
-                            <option value="Seyahat">Seyahat</option>
-                            <option value="Sağlık">Sağlık</option>
-                            <option value="Uluslararası">Uluslararası</option>
-                            <option value="Spor">Spor</option>
-                            <option value="Teknoloji">Teknoloji</option>
-                            <option value="İş">İş</option>
-                        </select>
+            onChange={(e) => setCategory(e.target.value)}
+            value={category}
+            required 
+            name="category" 
+            id='category' 
+            className='w-full px-4 py-2 rounded-md border border-gray-300 focus:border-blue-500 outline-none transition h-10'
+        >
+            <option value="">--- Kategori Seçin ---</option>
+            {categories.length > 0 ? (
+                categories.map((c, index) => (
+                    <option key={`${c._id}-${index}`} value={c.slug}>
+                        {c.category}
+                    </option>
+                ))
+            ) : (
+                <option disabled>Yükleniyor...</option>
+            )}
+        </select>
                     </div>
-                    <div>
-                        <label htmlFor="bigCategory" className='block text-md font-medium text-gray-600 mb-2'>Üst Kategori</label>
-                        <select 
-                            onChange={bigCategoryHandle}
-                            value={bigCategory}
-                            required 
-                            name="bigCategory" 
-                            id='bigCategory' 
-                            className='w-full px-4 py-2 rounded-md border border-gray-300 focus:border-blue-500 outline-none transition h-10'
-                        >
-                            <option value="">--- Üst Kategori Seçin ---</option>
-                            <option value="Türkiye">Türkiye</option>
-                            <option value="Dünya">Dünya</option>
-                            <option value="Kahramanmaraş">Kahramanmaraş</option>
-                        </select>
-                    </div>
+                  
                 </div>
 
                 <div>
@@ -208,7 +223,32 @@ const CreateNews = () => {
                         <input type="file" id="img" className='hidden' onChange={imageHandle} required />
                     </div>
                 </div>
-
+                <div>
+    <label htmlFor="video" className='block text-md font-medium text-gray-600 mb-2'>Video</label>
+    <div className='flex items-center gap-4'>
+        <label htmlFor="video" className='flex items-center justify-center w-full sm:w-1/2 h-[150px] border border-dashed border-gray-400 rounded-md cursor-pointer'>
+            {videoPreview ? (
+                <video
+                width="100%"
+                height="auto"
+                controls
+                style={{
+                  maxWidth: "300px", // Maksimum genişlik (Değiştirilebilir)
+                  maxHeight: "200px", // Maksimum yükseklik (Değiştirilebilir)
+                  borderRadius: "8px",
+                  objectFit: "cover"
+                }}
+              >
+                <source src={videoPreview} type="video/mp4" />
+                Tarayıcınız video etiketini desteklemiyor.
+              </video>
+            ) : (
+                <FaImages className='text-gray-500 text-4xl' />
+            )}
+        </label>
+        <input type="file" id="video" className='hidden' onChange={videoHandle} accept="video/mp4,video/x-m4v,video/*" />
+    </div>
+</div>
                 <div>
                     <label htmlFor="description" className='block text-md font-medium text-gray-600 mb-2'>Açıklama</label>
                     <JoditEditor

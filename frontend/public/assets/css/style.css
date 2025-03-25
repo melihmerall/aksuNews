@@ -97,7 +97,7 @@ Version: 1.0.0
   --error-color: #dc3545;
   --border-color: #EFEFEF;
   --title-font: 'League Spartan', sans-serif;
-  --body-font: 'Poppins', sans-serif;
+  --body-font: 'Roboto', sans-serif;
   --icon-font: "Font Awesome 6 Pro";
   --main-container: 1224px;
   --container-gutters: 24px;
@@ -154,7 +154,6 @@ embed,
 object,
 video {
   max-width: 100%;
-  height: auto;
 }
 
 ul {
@@ -237,6 +236,7 @@ p {
   margin: 0 0 18px 0;
   color: var(--body-color);
   line-height: 1.75;
+  font-size: 18px;
 }
 
 h1 a,
@@ -3091,9 +3091,9 @@ a.text-theme:hover,
   color: var(--title-color);
   background-color: var(--title-color);
   font-weight: 700;
-  border-radius: 4px;
+  border-radius: 1px;
   position: relative;
-  z-index: 2;
+  z-index: 5;
   margin-bottom: 10px;
 }
 
@@ -3130,6 +3130,7 @@ a.text-theme:hover,
   content: '';
   position: absolute;
   inset: 0;
+  color: var(--white-color);
   background-color: var(--smoke-color);
   border-radius: inherit;
   z-index: -1;
@@ -3143,7 +3144,7 @@ a.text-theme:hover,
 .widget_archive a:hover,
 .widget_categories a:hover,
 .wp-block-categories a:hover {
-  color: var(--white-color);
+  color: var(--theme-color);
 }
 
 .widget_nav_menu a:hover:after,
@@ -3210,7 +3211,7 @@ a.text-theme:hover,
 .widget_archive a:hover ~ span,
 .widget_categories a:hover ~ span,
 .wp-block-categories a:hover ~ span {
-  color: var(--theme-color);
+  color: var(--black-color);
 }
 
 .widget_nav_menu .children,
@@ -12206,7 +12207,6 @@ span.select2-selection.select2-selection--single:focus {
 }
 
 .dark-theme .light-img {
-  display: none;
 }
 
 .dark-theme .dark-img {
