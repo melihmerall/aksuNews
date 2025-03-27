@@ -1,34 +1,90 @@
+// Diğer importlar...
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { FaImages } from "react-icons/fa6";
 import JoditEditor from 'jodit-react';
-import Gallery from '../components/Gallery';
-import { base_url } from '../../config/config';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import storeContext from '../../context/storeContext';
+import { base_url } from '../../config/config';
 
 const EditNews = () => {
-
     const { store } = useContext(storeContext);
     const { news_id } = useParams();
 
     const [loader, setLoader] = useState(false);
-    const [show, setShow] = useState(false);
-
     const editor = useRef(null);
     const [title, setTitle] = useState('');
-    const [image, setImage] = useState('');
-    const [img, setImg] = useState('');
+    const [slug, setSlug] = useState('');
     const [description, setDescription] = useState('');
     const [category, setCategory] = useState('');
-    const [bigCategory, setBigCategory] = useState('');
-    const [old_image, set_old_image] = useState('');
     const [status, setStatus] = useState('');
 
-    const statusHandle = (e) => {
-        setStatus(e.target.value);
-    };
+    const [image, setImage] = useState(null);
+    const [img, setImg] = useState('');
+    const [old_image, setOldImage] = useState('');
+
+    const [video, setVideo] = useState(null);
+    const [videoPreview, setVideoPreview] = useState('');
+    const [old_video, setOldVideo] = useState('');
+
+    const [categories, setCategories] = useState([]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const res = await fetch(`${base_url}/api/category/all`);
+                const data = await res.json();
+                setCategories(data.categories);
+            } catch (error) {
+                console.error("Kategoriler yüklenirken hata oluştu:", error);
+            }
+        };
+        fetchCategories();
+    }, []);
+
+    useEffect(() => {
+        const get_edit_news = async () => {
+            try {
+                const { data } = await axios.get(`${base_url}/api/edit/news/${news_id}`, {
+                    headers: { 'Authorization': `Bearer ${store.token}` }
+                });
+                const news = data.news;
+                setTitle(news.title);
+                setSlug(news.slug);
+                setDescription(news.description);
+                setCategory(news.category);
+                setStatus(news.status);
+                setImg(news.image);
+                setOldImage(news.image);
+                if (news.video) {
+                    setVideoPreview(news.video);
+                    setOldVideo(news.video);
+                }
+            } catch (error) {
+                console.error('Haber getirilemedi', error);
+            }
+        };
+        get_edit_news();
+    }, [news_id]);
+
+    useEffect(() => {
+        const autoSlugify = (str) => {
+            return str
+                .toLowerCase()
+                .replace(/ü/g, 'u')
+                .replace(/ı/g, 'i')
+                .replace(/ğ/g, 'g')
+                .replace(/ş/g, 's')
+                .replace(/ç/g, 'c')
+                .replace(/ö/g, 'o')
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/--+/g, '-')
+                .replace(/^-+|-+$/g, '');
+        };
+        setSlug(autoSlugify(title));
+    }, [title]);
 
     const imageHandle = (e) => {
         const { files } = e.target;
@@ -38,28 +94,41 @@ const EditNews = () => {
         }
     };
 
+    const videoHandle = (e) => {
+        const { files } = e.target;
+        if (files.length > 0) {
+            setVideo(files[0]);
+            setVideoPreview(URL.createObjectURL(files[0]));
+        }
+    };
+
     const update = async (e) => {
         e.preventDefault();
-
         const formData = new FormData();
         formData.append('title', title);
+        formData.append('slug', slug);
         formData.append('description', description);
         formData.append('category', category);
-        formData.append('bigCategory', bigCategory);
         formData.append('status', status);
 
         if (image) {
             formData.append('image', image);
+        } else {
+            formData.append('old_image', old_image);
         }
 
-        formData.append('old_image', old_image);
+        if (video) {
+            formData.append('video', video);
+        } else {
+            formData.append('old_video', old_video);
+        }
 
         try {
             setLoader(true);
             const { data } = await axios.put(`${base_url}/api/news/update/${news_id}`, formData, {
                 headers: {
                     'Authorization': `Bearer ${store.token}`,
-                    'Content-Type': 'multipart/form-data',
+                    'Content-Type': 'multipart/form-data'
                 },
             });
             setLoader(false);
@@ -69,53 +138,6 @@ const EditNews = () => {
             toast.error(error.response?.data?.message || 'Güncelleme sırasında bir hata oluştu.');
         }
     };
-
-    const [images, setImages] = useState([]);
-
-    const get_images = async () => {
-        try {
-            const { data } = await axios.get(`${base_url}/api/images`, {
-                headers: {
-                    'Authorization': `Bearer ${store.token}`
-                }
-            });
-            setImages(data.images);
-        } catch (error) {
-        }
-    };
-
-    useEffect(() => {
-        get_images();
-    }, []);
-
-    const categoryHandle = (e) => {
-        setCategory(e.target.value);
-    };
-
-    const bigCategoryHandle = (e) => {
-        setBigCategory(e.target.value);
-    };
-
-    const get_edit_news = async () => {
-        try {
-            const { data } = await axios.get(`${base_url}/api/edit/news/${news_id}`, {
-                headers: {
-                    'Authorization': `Bearer ${store.token}`
-                }
-            });
-            setTitle(data?.news?.title);
-            setDescription(data?.news?.description);
-            setImg(data?.news?.image);
-            setCategory(data?.news?.category);
-            setBigCategory(data?.news?.bigCategory);
-            setStatus(data?.news?.status);
-        } catch (error) {
-        }
-    };
-
-    useEffect(() => {
-        get_edit_news();
-    }, [news_id]);
 
     return (
         <div className='bg-white shadow-md rounded-md p-6'>
@@ -129,72 +151,32 @@ const EditNews = () => {
             <form onSubmit={update} className='space-y-6'>
                 <div>
                     <label htmlFor="title" className='block text-md font-medium text-gray-600 mb-2'>Başlık</label>
-                    <input 
-                        value={title} 
-                        onChange={(e) => setTitle(e.target.value)} 
-                        type="text" 
-                        placeholder='Haber Başlığını Girin' 
-                        name='title' 
-                        id='title' 
-                        className='w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition' 
-                        required 
-                    />
+                    <input value={title} onChange={(e) => setTitle(e.target.value)} type="text" name='title' id='title' className='w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition' required />
+                </div>
+
+                <div>
+                    <label htmlFor="slug" className='block text-md font-medium text-gray-600 mb-2'>Seo Url</label>
+                    <input value={slug} onChange={(e) => setSlug(e.target.value)} type="text" name='slug' id='slug' className='w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition' required />
                 </div>
 
                 <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
                     <div>
                         <label htmlFor="category" className='block text-md font-medium text-gray-600 mb-2'>Kategori</label>
-                        <select 
-                            onChange={categoryHandle} 
-                            value={category} 
-                            required 
-                            name="category" 
-                            id='category' 
-                            className='w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition'
-                        >
+                        <select onChange={(e) => setCategory(e.target.value)} value={category} required name="category" id='category' className='w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition'>
                             <option value="">--- Kategori Seçin ---</option>
-                            <option value="Genel">Genel</option>
-                            <option value="Eğitim">Eğitim</option>
-                            <option value="Seyahat">Seyahat</option>
-                            <option value="Sağlık">Sağlık</option>
-                            <option value="Uluslararası">Uluslararası</option>
-                            <option value="Spor">Spor</option>
-                            <option value="Teknoloji">Teknoloji</option>
-                            <option value="İş">İş</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label htmlFor="bigCategory" className='block text-md font-medium text-gray-600 mb-2'>Üst Kategori</label>
-                        <select 
-                            onChange={bigCategoryHandle} 
-                            value={bigCategory} 
-                            required 
-                            name="bigCategory" 
-                            id='bigCategory' 
-                            className='w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition'
-                        >
-                            <option value="">--- Üst Kategori Seçin ---</option>
-                            <option value="Türkiye">Türkiye</option>
-                            <option value="Dünya">Dünya</option>
-                            <option value="Kahramanmaraş">Kahramanmaraş</option>
+                            {categories.map((c, index) => (
+                                <option key={`${c._id}-${index}`} value={c.slug}>{c.category}</option>
+                            ))}
                         </select>
                     </div>
                 </div>
 
                 <div>
                     <label htmlFor="status" className='block text-md font-medium text-gray-600 mb-2'>Durum</label>
-                    <select 
-                        onChange={statusHandle} 
-                        value={status} 
-                        required 
-                        name="status" 
-                        id='status' 
-                        className='w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition'
-                    >
+                    <select onChange={(e) => setStatus(e.target.value)} value={status} required name="status" id='status' className='w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition'>
                         <option value="">--- Durum Seçin ---</option>
                         <option value="onayBekliyor">Onay Bekliyor</option>
-                        <option value="aktif">Aktif</option>
-                        <option value="deaktif">Deaktif</option>
+
                     </select>
                 </div>
 
@@ -209,23 +191,29 @@ const EditNews = () => {
                 </div>
 
                 <div>
+                    <label htmlFor="video" className='block text-md font-medium text-gray-600 mb-2'>Video</label>
+                    <div className='flex items-center gap-4'>
+                        <label htmlFor="video" className='flex items-center justify-center w-full sm:w-1/2 h-[150px] border border-dashed border-gray-400 rounded-md cursor-pointer'>
+                            {videoPreview ? (
+                                <video width="100%" height="auto" controls className="rounded">
+                                    <source src={videoPreview} type="video/mp4" />
+                                    Tarayıcınız video etiketini desteklemiyor.
+                                </video>
+                            ) : (
+                                <FaImages className='text-gray-500 text-4xl' />
+                            )}
+                        </label>
+                        <input type="file" id="video" className='hidden' onChange={videoHandle} accept="video/mp4,video/*" />
+                    </div>
+                </div>
+
+                <div>
                     <label htmlFor="description" className='block text-md font-medium text-gray-600 mb-2'>Açıklama</label>
-                    <JoditEditor
-                        ref={editor}
-                        value={description}
-                        tabIndex={1}
-                        onBlur={value => setDescription(value)}
-                        onChange={() => { }}
-                        className='w-full border border-gray-400 rounded-md'
-                    />
+                    <JoditEditor ref={editor} value={description} tabIndex={1} onBlur={value => setDescription(value)} onChange={() => { }} className='w-full border border-gray-400 rounded-md' />
                 </div>
 
                 <div className='mt-4'>
-                    <button 
-                        type='submit' 
-                        disabled={loader} 
-                        className='px-4 py-2 bg-blue-500 rounded-md text-white hover:bg-blue-800 transition'
-                    >
+                    <button type='submit' disabled={loader} className='px-4 py-2 bg-blue-500 rounded-md text-white hover:bg-blue-800 transition'>
                         {loader ? 'Güncelleniyor...' : 'Güncelle'}
                     </button>
                 </div>

@@ -20,7 +20,6 @@ const CategoryNews = async ({ params }) => {
     if (!res.ok) throw new Error("Failed to fetch news");
     const data = await res.json();
     news = data.news;
-    console.log("news:", news + " " + category) ;
   } catch (error) {
     console.error("Error fetching news:", error);
   }

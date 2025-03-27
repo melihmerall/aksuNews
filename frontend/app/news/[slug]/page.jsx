@@ -9,25 +9,29 @@ import { use } from "react";
 import RecentNews from "@/components/news/RecentNews";
 import Search from "@/components/news/Search";
 import { base_api_url } from "@/config/config";
+import InfiniteNews from "@/app/InfiniteNews";
+
 import React from "react";
 import Link from "next/link";
 import RelatedNews from "@/components/news/RelatedNews";
 import { useDate } from "/app/DateContext";
+import Footer from "@/components/Footer";
 
-const Details = () => {
+const Details =  ()  => {
+
+
+  
   const { slug } = useParams();
   const [news, setNews] = useState(null);
   const [relatedNews, setRelatedNews] = useState([]);
   const formatDate = useDate();
   const [categories, setCategories] = useState([]);
- console.log(categories);
   useEffect(() => {
     const fetchNews = async () => {
       try {
         const res = await fetch(`${base_api_url}/api/news/details/${slug}`);
         const data = await res.json();
         setNews(data.news);
-        console.log(data);
         setRelatedNews(data.relatedNews); // ✅ relatedNews ekleniyor
       } catch (error) {
         console.error("Haber yüklenirken hata oluştu:", error);
@@ -51,6 +55,7 @@ const Details = () => {
 
     fetchCategories();
   }, []);
+ 
   return (
     <div>
       {/* Breadcrumb Section */}
@@ -141,10 +146,9 @@ const Details = () => {
                     <div className="blog-info-wrap">
                       {/* Yazdır Butonu */}
                       <button className="blog-info ms-sm-auto">
-                        15k <i className="fas fa-thumbs-up"></i>
                       </button>
                       <span className="blog-info">
-                        126k <i className="fas fa-eye"></i>
+                      {news?.count} <i className="fas fa-eye"></i>
                       </span>
                      
                     </div>
@@ -201,8 +205,11 @@ const Details = () => {
                             <p className="author-text">Adventurer and passionate travel blogger. With a backpack full of stories and a camera in hand, she takes her readers on exhilarating journeys around the world.</p>
                         </div>
                     </div> */}
+<hr></hr>
+<h4>Daha fazla haber...</h4>
+              {/* <RelatedNews news={relatedNews} type="Related News" /> */}
 
-              <RelatedNews news={relatedNews} type="Related News" />
+              <InfiniteNews />
             </div>
             <div className="col-xxl-3 col-lg-4 sidebar-wrap">
               <aside className="sidebar-area">
@@ -225,7 +232,7 @@ const Details = () => {
                     <a href="https://themeforest.net/user/themeholy/portfolio">
                       <img
                         className="w-100"
-                        src="assets/img/ads/siderbar_ads_1.jpg"
+                        src="/assets/img/ads/siderbar_ads_1.jpg"
                         alt="ads"
                       />
                     </a>
@@ -252,8 +259,11 @@ const Details = () => {
             </div>
           </div>
         </div>
+
       </section>
+      
     </div>
+    
   );
 };
 

@@ -1,8 +1,9 @@
 import SimpleDetailsNewCard from "@/components/news/item/SimpleDetailsNewCard";
+import Footer from "../Footer";
 
 const RelatedNews = ({ news, type }) => {
   return (
-    <div className="related-post-wrapper pt-30 mb-30">
+    <div className="related-post-wrapper ">
       {/* Başlık ve Butonlar */}
       <div className="row align-items-center">
         <div className="col">
@@ -30,10 +31,7 @@ const RelatedNews = ({ news, type }) => {
       <div
         className="row slider-shadow th-carousel"
         id="related-post-slide"
-        data-slide-show="3"
-        data-lg-slide-show="2"
-        data-md-slide-show="2"
-        data-sm-slide-show="2"
+
       >
         {news &&
           news.length > 0 &&
@@ -48,7 +46,11 @@ const RelatedNews = ({ news, type }) => {
             );
           })}
       </div>
+      <br></br>
+      <hr></hr>
+      <br></br>
     </div>
+    
   );
 };
 

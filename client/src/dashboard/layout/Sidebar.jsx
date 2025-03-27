@@ -77,6 +77,26 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                                 <span>Kategori Ekle</span>
                             </Link>
                         </li>
+
+                        <li>
+                            <Link 
+                                to='/dashboard/ads/create' 
+                                className={`px-4 py-3 ${pathname === '/dashboard/ads/create' ? 'bg-indigo-500 text-white' : 'bg-white text-gray-800'} shadow-lg rounded-lg flex items-center gap-x-3 transition-all duration-300 hover:bg-indigo-500 hover:text-white`}
+                            >
+                                <PiUsersFill className='text-[20px]' />
+                                <span>Ads Ekle</span>
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link 
+                                to='/dashboard/ads' 
+                                className={`px-4 py-3 ${pathname === '/dashboard/ads' ? 'bg-indigo-500 text-white' : 'bg-white text-gray-800'} shadow-lg rounded-lg flex items-center gap-x-3 transition-all duration-300 hover:bg-indigo-500 hover:text-white`}
+                            >
+                                <PiUsersFill className='text-[20px]' />
+                                <span>Ads Listesi</span>
+                            </Link>
+                        </li>
                     </>
                 ) : (
                     <>

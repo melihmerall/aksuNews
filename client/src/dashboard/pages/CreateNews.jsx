@@ -1,14 +1,13 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaImages } from "react-icons/fa6";
 import JoditEditor from 'jodit-react';
 import Gallery from '../components/Gallery';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import storeContext from '../../context/storeContext';
-import { useNavigate } from 'react-router-dom';
-import { set } from 'mongoose';
 import { base_url } from '../../config/config';
+
 const CreateNews = () => {
     const { store } = useContext(storeContext);
     const navigate = useNavigate();
@@ -34,6 +33,7 @@ const CreateNews = () => {
             setImage(files[0]);
         }
     };
+
     const videoHandle = (e) => {
         const { files } = e.target;
         if (files.length > 0) {
@@ -41,28 +41,47 @@ const CreateNews = () => {
             setVideoPreview(URL.createObjectURL(files[0]));
         }
     };
+
     useEffect(() => {
         const fetchCategories = async () => {
-          try {
-            const res = await fetch(`${base_url}/api/category/all`);
-            const data = await res.json();
-            setCategories(data.categories); // API'den dönen kategorileri state'e kaydet
-          } catch (error) {
-            console.error("Kategoriler yüklenirken hata oluştu:", error);
-          }
+            try {
+                const res = await fetch(`${base_url}/api/category/all`);
+                const data = await res.json();
+                setCategories(data.categories);
+            } catch (error) {
+                console.error("Kategoriler yüklenirken hata oluştu:", error);
+            }
         };
-    
+
         fetchCategories();
-      }, []);
+    }, []);
+
+    useEffect(() => {
+        const autoSlugify = (str) => {
+            return str
+                .toLowerCase()
+                .replace(/ü/g, 'u')
+                .replace(/ı/g, 'i')
+                .replace(/ğ/g, 'g')
+                .replace(/ş/g, 's')
+                .replace(/ç/g, 'c')
+                .replace(/ö/g, 'o')
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/--+/g, '-')
+                .replace(/^-+|-+$/g, '');
+        };
+        setSlug(autoSlugify(title));
+    }, [title]);
+
     const statusHandle = (e) => {
         setStatus(e.target.value);
     };
+
     const categoryHandle = (e) => {
         setCategory(e.target.value);
     };
-    const bigCategoryHandle = (e) => {
-        setBigCategory(e.target.value);
-    };
+
     const added = async (e) => {
         e.preventDefault();
 
@@ -70,10 +89,10 @@ const CreateNews = () => {
             toast.error('Lütfen tüm alanları doldurunuz');
             return;
         }
+
         const formData = new FormData();
         formData.append('title', title.trim());
         formData.append('slug', slug.trim());
-
         formData.append('description', description.trim());
         formData.append('image', image);
         formData.append('category', category.trim());
@@ -81,11 +100,12 @@ const CreateNews = () => {
         if (video) {
             formData.append('video', video);
         }
+
         try {
             setLoader(true);
             const { data } = await axios.post(
-                `${base_url}/api/news/add`, 
-                formData, 
+                `${base_url}/api/news/add`,
+                formData,
                 {
                     headers: {
                         'Authorization': `Bearer ${store.token}`,
@@ -112,6 +132,7 @@ const CreateNews = () => {
             setLoader(false);
         }
     };
+
     const [images, setImages] = useState([]);
 
     const get_images = async () => {
@@ -122,8 +143,7 @@ const CreateNews = () => {
                 }
             });
             setImages(data.images);
-        } catch (error) {
-        }
+        } catch (error) {}
     };
 
     useEffect(() => {
@@ -209,8 +229,7 @@ const CreateNews = () => {
                     >
                         <option value="">--- Durum Seçin ---</option>
                         <option value="onayBekliyor">Onay Bekliyor</option>
-                        <option value="Aktif">Aktif</option>
-                        <option value="Deaktif">Deaktif</option>
+
                     </select>
                 </div>
 

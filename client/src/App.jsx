@@ -13,11 +13,14 @@ import Writers from './dashboard/pages/Writers';
 import Writerindex from './dashboard/pages/Writerindex';
 import CreateNews from './dashboard/pages/CreateNews';
 import CreateCategory from './dashboard/pages/CreateCategory';
+import AddAds from './dashboard/pages/AddAds';
+import EditAds from './dashboard/pages/EditAds';
 
 import storeContext from './context/storeContext';
 import EditWriter from './dashboard/pages/EditWriter';
 import EditNews from './dashboard/pages/EditNews';
 import React from 'react';
+import ListAds from './dashboard/pages/ListAds';
 
 function App() { 
 
@@ -35,19 +38,23 @@ function App() {
 
           <Route path='profile' element={<Profile/>} />
           <Route path='news' element={<News/>} />
+          <Route path='news/:news_id' element={<EditNews/>} />
 
           <Route path='' element={<ProtectRole role='admin' />}>
             <Route path='admin' element={<Adminindex/>} />
             <Route path='writer/add' element={<AddWriter/>} />
             <Route path='category/create' element={<CreateCategory/>} />
+            <Route path='ads/create' element={<AddAds/>} />
+            <Route path='ads' element={<ListAds/>} />
             <Route path='writers' element={<Writers/>} />
             <Route path='writer/edit/:id' element={<EditWriter/>} />
+            <Route path='ads/edit/:id' element={<EditAds/>} />
+
           </Route> 
 
           <Route path='' element={<ProtectRole role='yazar' />}>
             <Route path='writer' element={<Writerindex/>} />
             <Route path='news/create' element={<CreateNews/>} /> 
-            <Route path='news/edit/:news_id' element={<EditNews/>} />
           </Route> 
 
           </Route>  

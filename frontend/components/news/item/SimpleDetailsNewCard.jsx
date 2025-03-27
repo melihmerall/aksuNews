@@ -6,7 +6,8 @@ import { useDate } from "/app/DateContext";
 const SimpleDetailsNewCard = ({ news, type }) => {
   const formatDate = useDate();
   return (
-    <div className="col-sm-6 col-xl-4">
+    
+    <div className="col-sm-12 col-xl-12">
       <div className="blog-style1">
         <div className="blog-img">
         <img style={{ height: "250px", width: "450px" }} src={`http://localhost:5173${news?.image || "/default.jpg"}`} alt="blog image" />
@@ -30,6 +31,7 @@ const SimpleDetailsNewCard = ({ news, type }) => {
           </a>
         </div>
       </div>
+      <br></br>
     </div>
   );
 };

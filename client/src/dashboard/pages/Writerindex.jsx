@@ -124,7 +124,7 @@ const Writerindex = () => {
                                     </td>
                                     <td className='py-4 px-6'>
                                         <Link
-                                            to={`/dashboard/news/edit/${n._id}`}
+                                            to={`/dashboard/news/${n._id}`}
                                             className='p-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 transition inline-flex items-center'
                                         >
                                             <FaEye className="mr-1" />

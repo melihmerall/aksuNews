@@ -182,7 +182,7 @@ const NewsContent = () => {
         </td>
     
     }                                <td className='py-4 px-6 flex gap-2'>
-                                    <Link to={`/dashboard/news/view/${n._id}`} className='p-2 bg-blue-500 text-white rounded hover:bg-blue-700'>
+                                    <Link to={`/dashboard/news/${n._id}`} className='p-2 bg-blue-500 text-white rounded hover:bg-blue-700'>
                                         Görüntüle
                                     </Link>
                                     <button onClick={() => deleteNews(n._id)} className='p-2 bg-red-500 text-white rounded hover:bg-red-700'>
